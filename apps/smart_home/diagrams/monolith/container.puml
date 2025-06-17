@@ -1,0 +1,47 @@
+@startuml
+title WarmHouse Container Diagram
+
+top to bottom direction
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Container.puml
+
+Person(User, "User", "A user of the warmhouse system")
+Person(Admin, "Admin", "An admin (aka technician) mounts and connects new sensors to the system")
+
+Container_Boundary(WarmHouseBoundary, "Warm House System") {
+  Container(WebApplication, "Users Web-Application", "HTML, JavaScript", "Web Application for users")
+
+  Container(UsersService, "Users Service", "Go", "Service for user's authentication and authorization")
+  Container(UsersDatabase, "Users Database", "PostgreSQL", "Stores user data, permissions and sessions")
+
+  Container(SensorsService, "Sensors Service", "Go", "Service for sensors management")
+  Container(SensorsDatabase, "Sensors Database", "PostgreSQL", "Stores sensors data")
+
+  Container(HeatingService, "Heating Service", "Go", "Service for viewing temperature")
+  Container(HeatingDatabase, "Heating Database", "PostgreSQL", "Stores temperature")
+}
+
+System_Ext(HeatingControlApi, "Heating Control API", "External API for heating control")
+System_Ext(TemperatureSensorApi, "Temperature Data API", "External API for receiving temperature from sensors")
+
+Rel(Admin, WebApplication, "Authentication\nAuthorization")
+Rel(Admin, WebApplication, "Create/Read/\nUpdate/Delete sensors")
+
+Rel(User, WebApplication, "Authentication\nAuthorization")
+Rel(User, WebApplication, "View\ntemperature")
+Rel(User, WebApplication, "Enable/disable\nheating")
+
+Rel(WebApplication, SensorsService, "Enable/disable\nheating")
+Rel(WebApplication, UsersService, "Authentication\nAuthorization")
+Rel(WebApplication, HeatingService, "View\ntemperature")
+
+Rel(HeatingService, SensorsService, "Get\nsensors")
+Rel(HeatingService, HeatingDatabase, "Read/Write\nheating data")
+Rel_U(HeatingService, HeatingControlApi, "Enable/disable\nheating")
+Rel_L(HeatingService, TemperatureSensorApi, "Receive temperature\nfrom sensor")
+
+Rel(UsersService, UsersDatabase, "Read/Write\nusers data")
+
+Rel_D(SensorsService, SensorsDatabase, "Read/Write\nsensors data")
+
+@enduml
