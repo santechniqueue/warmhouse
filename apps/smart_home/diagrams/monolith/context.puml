@@ -1,0 +1,29 @@
+@startuml
+title Warm House Context Diagram
+
+top to bottom direction
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Context.puml
+
+Person(User, "User", "A user of the warmhouse system")
+Person(Admin, "Admin", "An admin (aka technician) mounts and connects new sensors to the system")
+
+System(HeatingSystem, "Heating System", "1. Display temperature;\n2.Enable/disable heating.")
+System(SensorsSystem, "Sensors System", "System for sensors management")
+System(UsersSystem, "Users System", "System for user's authentication and authorization")
+
+System_Ext(SensorsApi, "Sensors API", "External API for receiving temperature from sensors")
+System_Ext(HeatingApi, "Heating API", "External API for heating control")
+
+Rel(User, UsersSystem, "Authentication/Authorization")
+Rel(User, HeatingSystem, "Views temperature")
+Rel(User, HeatingSystem, "Enabling/disabling heating")
+
+Rel(Admin, UsersSystem, "Authentication/Authorization")
+Rel(Admin, SensorsSystem, "Manages sensors")
+
+Rel(SensorsSystem, SensorsApi, "Receive temperature")
+
+Rel(HeatingSystem, HeatingApi, "Controls heating")
+
+@enduml
