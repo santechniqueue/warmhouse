@@ -12,13 +12,10 @@ Container_Boundary(WarmHouseBoundary, "Warm House System") {
   Container(WebApplication, "Users Web-Application", "HTML, JavaScript", "Web Application for users")
 
   Container(UsersService, "Users Service", "Go", "Service for user's authentication and authorization")
-  Container(UsersDatabase, "Users Database", "PostgreSQL", "Stores user data, permissions and sessions")
-
   Container(SensorsService, "Sensors Service", "Go", "Service for sensors management")
-  Container(SensorsDatabase, "Sensors Database", "PostgreSQL", "Stores sensors data")
-
   Container(HeatingService, "Heating Service", "Go", "Service for viewing temperature")
-  Container(HeatingDatabase, "Heating Database", "PostgreSQL", "Stores temperature")
+
+  Container(Database, "Database", "PostgreSQL", "Stores temperature, sensors and users data")
 }
 
 System_Ext(HeatingControlApi, "Heating Control API", "External API for heating control")
@@ -31,17 +28,17 @@ Rel(User, WebApplication, "Authentication\nAuthorization")
 Rel(User, WebApplication, "View\ntemperature")
 Rel(User, WebApplication, "Enable/disable\nheating")
 
-Rel(WebApplication, SensorsService, "Enable/disable\nheating")
-Rel(WebApplication, UsersService, "Authentication\nAuthorization")
-Rel(WebApplication, HeatingService, "View\ntemperature")
+Rel_D(WebApplication, SensorsService, "Enable/disable\nheating")
+Rel_R(WebApplication, HeatingService, "View\ntemperature")
+Rel_L(WebApplication, UsersService, "Authentication\nAuthorization")
 
 Rel(HeatingService, SensorsService, "Get\nsensors")
-Rel(HeatingService, HeatingDatabase, "Read/Write\nheating data")
-Rel_U(HeatingService, HeatingControlApi, "Enable/disable\nheating")
-Rel_L(HeatingService, TemperatureSensorApi, "Receive temperature\nfrom sensor")
+Rel(HeatingService, Database, "Read/Write\nheating data")
+Rel_R(HeatingService, HeatingControlApi, "Enable/disable\nheating")
+Rel_D(HeatingService, TemperatureSensorApi, "Receive temperature\nfrom sensor")
 
-Rel(UsersService, UsersDatabase, "Read/Write\nusers data")
+Rel(UsersService, Database, "Read/Write\nusers data")
 
-Rel_D(SensorsService, SensorsDatabase, "Read/Write\nsensors data")
+Rel_D(SensorsService, Database, "Read/Write\nsensors data")
 
 @enduml
