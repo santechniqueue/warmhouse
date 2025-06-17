@@ -10,8 +10,8 @@ Person(Admin, "Admin", "An admin (aka technician) mounts and connects new sensor
 
 System(WarmHouseSystem, "Warm House System", "Heating control system")
 
-System_Ext(SensorsApi, "Sensors API", "External API for receiving temperature from sensors")
-System_Ext(HeatingApi, "Heating API", "External API for heating control")
+System_Ext(HeatingControlApi, "Heating Control API", "External API for heating control")
+System_Ext(TemperatureSensorApi, "Temperature Sensor API", "External API for receiving temperature from sensors")
 
 Rel(User, WarmHouseSystem, "Authentication/Authorization")
 Rel(User, WarmHouseSystem, "Views temperature")
@@ -19,8 +19,8 @@ Rel(User, WarmHouseSystem, "Views temperature")
 Rel(Admin, WarmHouseSystem, "Authentication/Authorization")
 Rel(Admin, WarmHouseSystem, "Manages sensors")
 
-Rel(WarmHouseSystem, SensorsApi, "Receive temperature")
+Rel(WarmHouseSystem, TemperatureSensorApi, "Receive temperature")
 
-Rel(WarmHouseSystem, HeatingApi, "Controls heating")
+Rel(WarmHouseSystem, HeatingControlApi, "Controls heating")
 
 @enduml
