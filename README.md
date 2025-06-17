@@ -63,7 +63,9 @@
 ### 5. Визуализация контекста системы — диаграмма С4
 
 
-[Диаграмма контекста системы в модели C4](https://github.com/santechniqueue/architecture-pro-warmhouse/blob/43ff3352c30faade0968c23ee5333ce2089b9b34/apps/smart_home/diagrams/monolith/context.puml)
+[Диаграмма контекста системы в модели C4](schemas/context.puml)
+
+![Диаграмма контекста системы в модели C4](schemas/context.png)
 
 # Задание 2. Проектирование микросервисной архитектуры
 
