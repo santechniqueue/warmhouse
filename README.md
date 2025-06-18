@@ -97,11 +97,7 @@
 
 **Диаграмма контейнеров (Containers)**
 
-[As-Is Диаграмма контейнеров системы](schemas/as_is/containers.puml)
-
-![Диаграмма контейнеров системы](schemas/as_is/containers.png)
-
-[To-Be Диаграмма контейнеров системы](schemas/to_be/containers.puml)
+[Диаграмма контейнеров системы](schemas/to_be/containers.puml)
 
 ![Диаграмма контейнеров системы](schemas/to_be/containers.png)
 
