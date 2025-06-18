@@ -89,7 +89,7 @@
 
 [Диаграмма контекста](schemas/as_is/context.puml)
 
-![Диаграмма контекста](schemas/as_is/context.png)
+![Диаграмма контекста](schemas/as_is/context.svg)
 
 # Задание 2. Проектирование микросервисной архитектуры
 
@@ -99,7 +99,7 @@
 
 [Диаграмма контейнеров системы](schemas/to_be/containers.puml)
 
-![Диаграмма контейнеров системы](schemas/to_be/containers.png)
+![Диаграмма контейнеров системы](schemas/to_be/containers.svg)
 
 Добавьте диаграмму.
 
