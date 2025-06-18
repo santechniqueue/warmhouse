@@ -9,7 +9,7 @@ Person(User, "User", "A user of the warmhouse system")
 Person(Admin, "Admin", "An admin (aka technician) mounts and connects new sensors to the system")
 
 Container_Boundary(WarmHouseBoundary, "Warm House System") {
-  Container(WebApplication, "Users Web-Application", "HTML, JavaScript", "Web Application for users")
+  Container(WebApplication, "Web-Application", "HTML, JavaScript", "Web Application for users")
 
   Container(UsersService, "Users Service", "Go", "Service for user's authentication and authorization")
   Container(SensorsService, "Sensors Service", "Go", "Service for sensors management")
