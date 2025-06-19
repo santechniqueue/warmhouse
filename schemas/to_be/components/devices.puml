@@ -4,6 +4,12 @@ title WarmHouse Devices Sub‑system (Component)
 top to bottom direction
 
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+!define SPRITES https://raw.githubusercontent.com/plantuml-stdlib/gilbarbara-plantuml-sprites/master/sprites
+!include SPRITES/go.puml
+!include SPRITES/postgresql.puml
+!include SPRITES/nginx.puml
+!include SPRITES/javascript.puml
+!include SPRITES/kafka.puml
 
 Container_Boundary(WarmHouseBoundary, "WarmHouse System") {
     Container(DevicesService, "Devices Service", "Go", $sprite="go")
