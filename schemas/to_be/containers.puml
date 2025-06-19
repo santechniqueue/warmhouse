@@ -27,7 +27,6 @@ Container_Boundary(WarmHouseBoundary, "WarmHouse System") {
   ContainerDb(ScenarioDatabase, "Scenario Database", "PostgreSQL", "Stores scenarios data", $sprite="postgresql")
 
   Container(TelemetryService, "Telemetry Service", "Go", "Service for managing/collecting telemetry", $sprite="go")
-  Container(TelemetryStreamService, "Telemetry Stream Service", "Go", "Service collecting and publish telemetry from devices", $sprite="go")
   ContainerDb(TelemetryDatabase, "Telemetry Database", "PostgreSQL", "Stores telemetry data", $sprite="postgresql")
 
 
@@ -45,27 +44,27 @@ Rel(User, WebApplication, "Manages scenarios")
 Rel(WebApplication, APIGateway, "Sends request", "HTTPS")
 
 'Users'
-Rel(APIGateway, UsersService, "Proxy request", "REST")
+Rel_L(APIGateway, UsersService, "Proxy request", "REST")
 Rel(UsersService, UsersDatabase, "Reads/Writes users data")
 
 'Telemetry'
-Rel(APIGateway, TelemetryService, "Proxy request", "REST")
-Rel(MessageBroker, TelemetryService,  "Reads telemetry data", "json", "topic: telemetry")
-Rel(TelemetryService, TelemetryDatabase, "Reads/writes telemetry data", "json", "topic: telemetry")
+Rel_R(APIGateway, TelemetryService, "Proxy request", "REST")
+Rel(MessageBroker, TelemetryService,  "Reads\ntelemetry data", "json", "topic: telemetry")
+Rel_R(TelemetryService, TelemetryDatabase, "Reads/writes\ntelemetry data", "json", "topic: telemetry")
 
-Rel(ExternalDevicesAPI, TelemetryStreamService, "Publishes devices telemetry", "open protocol")
-Rel(TelemetryStreamService, MessageBroker, "Publishes devices telemetry", "json", "topic: telemetry")
+Rel(ExternalDevicesAPI, TelemetryService, "Writes devices\ntelemetry", "open protocol")
+Rel(TelemetryService, MessageBroker, "Publishes devices telemetry", "json", "topic: telemetry")
 
 'Devices'
-Rel(APIGateway, DevicesService, "Proxy request", "REST")
-Rel(MessageBroker, DevicesService,  "Reads devices data", "json", "topic: devices")
-Rel(DevicesService, MessageBroker, "Publishes devices data", "json", "topic: devices")
-Rel(DevicesService, DevicesDatabase, "Reads/writes devices data")
+Rel_R(APIGateway, DevicesService, "Proxy request", "REST")
+Rel_U(MessageBroker, DevicesService,  "Reads\ndevicesdata", "json", "topic: devices")
+Rel_D(DevicesService, MessageBroker, "Publishes\ndevices data", "json", "topic: devices")
+Rel(DevicesService, DevicesDatabase, "Reads/writes\ndevices data")
 
 'Scenario
-Rel(APIGateway, ScenarioService, "Proxy request", "REST")
-Rel(MessageBroker, ScenarioService,  "Reads devices data", "json", "topic: scenarios")
-Rel(ScenarioService, MessageBroker, "Publishes scensarios data", "json", "topic: scenarios")
+Rel_L(APIGateway, ScenarioService, "Proxy request", "REST")
+Rel(MessageBroker, ScenarioService,  "Reads\nscenarios data", "json", "topic: scenarios")
+Rel(ScenarioService, MessageBroker, "Publishes\nscensarios data", "json", "topic: scenarios")
 Rel(ScenarioService, ScenarioDatabase, "Reads/writes scenarios data")
 
 @enduml
