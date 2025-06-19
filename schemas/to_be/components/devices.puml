@@ -1,0 +1,33 @@
+@startuml
+title WarmHouse Devices Sub‑system (Component)
+
+top to bottom direction
+
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+Container_Boundary(WarmHouseBoundary, "WarmHouse System") {
+    Container(DevicesService, "Devices Service", "Go", $sprite="go")
+    Container(APIGateway, "API Gateway", "NGINX", "Proxy server", $sprite="nginx")
+    ContainerQueue(MessageBroker, "Message Broker", "Apache Kafka Cluster", "Message bus for services communication", $sprite="kafka")
+    ContainerDb(DevicesDatabase, "Devices Database", "PostgreSQL", "Stores devices data", $sprite="postgresql")
+}
+
+Container(DevicesService, "Devices Service") {
+  Component(Consumer, "Devices Consumer", "Consumes device data messages")
+  Component(Controller, "Devices Controller", "Handles devices operations")
+  Component(ServiceLayer, "Service Layer", "Consumes device data messages")
+  Component(RepositoryLayer, "Repository Layer", "Data access")
+}
+
+Rel(APIGateway, Controller, "Calls business logic")
+Rel(Controller, ServiceLayer, "Calls business logic")
+Rel(ServiceLayer, MessageBroker, "Publishes devices data")
+Rel_R(MessageBroker, Consumer, "Reads devices data")
+Rel(Consumer, ServiceLayer, "Calls business logic")
+Rel(ServiceLayer, RepositoryLayer, "Reads/Writes data")
+
+Rel(RepositoryLayer, DevicesDatabase, "Reads/Writes data")
+
+
+
+@enduml
