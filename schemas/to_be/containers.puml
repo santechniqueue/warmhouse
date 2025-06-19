@@ -1,7 +1,7 @@
 @startuml
 title WarmHouse Container Diagram
 
-left to right direction
+top to bottom direction
 
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
 
@@ -14,28 +14,24 @@ left to right direction
 
 Person(User, "User", "A user of the warmhouse system")
 
-Container_Boundary(WarmHouseBoundary, "Warm House System") {
+Container_Boundary(WarmHouseBoundary, "WarmHouse System") {
   Container(WebApplication, "Users Web-Application", "HTML, JavaScript", "Web Application for users", $sprite="javascript")
 
   Container(UsersService, "Users Service", "Go", "Service for user's authentication and authorization", $sprite="go")
   ContainerDb(UsersDatabase, "Users Database", "PostgreSQL", "Stores user data, permissions and sessions", $sprite="postgresql")
 
-  Container(DevicesAPI, "Devices API", "Go", "API for devices management", $sprite="go")
-  Container(DevicesConsumer, "Devices Consumer", "Go", "Consumes device data messages", $sprite="go")
+  Container(DevicesService, "Devices Service", "Go", "Service for devices management", $sprite="go")
   ContainerDb(DevicesDatabase, "Devices Database", "PostgreSQL", "Stores devices data", $sprite="postgresql")
 
-  Container(ScenarioAPI, "Scenario API", "Go", "API for scenarios management", $sprite="go")
-  Container(ScenarioConsumer, "Scenario Consumer", "Go", "Consumes scenarios data messages", $sprite="go")
-  Container(ScenarioWorker, "Scenario Worker", "Go", "Runs scenarios by trigger or schedule", $sprite="go")
+  Container(ScenarioService, "Scenario Service", "Go", "Service for managing/triggering/scheduling scenarios", $sprite="go")
   ContainerDb(ScenarioDatabase, "Scenario Database", "PostgreSQL", "Stores scenarios data", $sprite="postgresql")
 
-  Container(TelemetryAPI, "Telemetry API", "Go", "API for telemetry management", $sprite="go")
-  Container(TelemetryConsumer, "Telemetry Consumer", "Go", "Consumes telemetry data messages", $sprite="go")
-  Container(TelemetryWorker, "Telemetry Worker", "Go", "Collects telemetry from external devices", $sprite="go")
+  Container(TelemetryService, "Telemetry Service", "Go", "Service for managing/collecting telemetry", $sprite="go")
+  Container(TelemetryStreamService, "Telemetry Stream Service", "Go", "Service collecting and publish telemetry from devices", $sprite="go")
   ContainerDb(TelemetryDatabase, "Telemetry Database", "PostgreSQL", "Stores telemetry data", $sprite="postgresql")
 
-  Container(APIGateway, "API Gateway", "NGINX", "Proxy server", $sprite="nginx")
 
+  Container(APIGateway, "API Gateway", "NGINX", "Proxy server", $sprite="nginx")
   ContainerQueue(MessageBroker, "Message Broker", "Apache Kafka Cluster", "Message bus for services communication", $sprite="kafka")
 }
 
@@ -46,34 +42,30 @@ Rel(User, WebApplication, "Authentication/Authorization")
 Rel(User, WebApplication, "Manages devices")
 Rel(User, WebApplication, "Manages scenarios")
 
-Rel(WebApplication, APIGateway, "Sending Request", "HTTPS")
+Rel(WebApplication, APIGateway, "Sends request", "HTTPS")
 
 'Users'
-Rel_U(APIGateway, UsersService, "Proxying Request", "REST")
-Rel_L(UsersService, UsersDatabase, "Read/Write users data")
+Rel(APIGateway, UsersService, "Proxy request", "REST")
+Rel(UsersService, UsersDatabase, "Reads/Writes users data")
 
 'Telemetry'
-Rel(APIGateway, TelemetryAPI, "Proxying Request", "REST")
-Rel(TelemetryWorker, MessageBroker, "Publish telemetry data", "json", "topic: telemetry")
-Rel_D(TelemetryWorker, ExternalDevicesAPI, "Read devices telemetry", "open protocol")
-Rel(MessageBroker, TelemetryConsumer, "Read telemetry data", "json", "topic: telemetry")
-Rel(TelemetryAPI, TelemetryDatabase, "Get telemetry data", "json")
-Rel(TelemetryConsumer, TelemetryDatabase, "Write telemetry data")
+Rel(APIGateway, TelemetryService, "Proxy request", "REST")
+Rel(MessageBroker, TelemetryService,  "Reads telemetry data", "json", "topic: telemetry")
+Rel(TelemetryService, TelemetryDatabase, "Reads/writes telemetry data", "json", "topic: telemetry")
+
+Rel(ExternalDevicesAPI, TelemetryStreamService, "Publishes devices telemetry", "open protocol")
+Rel(TelemetryStreamService, MessageBroker, "Publishes devices telemetry", "json", "topic: telemetry")
 
 'Devices'
-Rel_L(APIGateway, DevicesAPI, "Proxying Request", "REST")
-Rel(DevicesAPI, MessageBroker, "Publish devices data", "json", "topic: devices")
-Rel(DevicesAPI, DevicesDatabase, "Get devices data")
-Rel(MessageBroker, DevicesConsumer, "Read devices data", "json", "topic: devices")
-Rel(DevicesConsumer, DevicesDatabase, "Write devices data")
+Rel(APIGateway, DevicesService, "Proxy request", "REST")
+Rel(MessageBroker, DevicesService,  "Reads devices data", "json", "topic: devices")
+Rel(DevicesService, MessageBroker, "Publishes devices data", "json", "topic: devices")
+Rel(DevicesService, DevicesDatabase, "Reads/writes devices data")
 
 'Scenario
-Rel(APIGateway, ScenarioAPI, "Proxying Request", "REST")
-Rel(ScenarioAPI, MessageBroker, "Publish scenario data", "json", "topic: scenarios")
-Rel(ScenarioAPI, ScenarioDatabase, "Get scenarios data")
-Rel(ScenarioWorker, ScenarioDatabase, "Get scenarios data")
-Rel_U(ScenarioWorker, MessageBroker, "Publish scenario trigger", "json", "topic: scenarios")
-Rel(MessageBroker, ScenarioConsumer, "Read scenarios data/trigger", "json", "topic: scenarios")
-Rel(ScenarioConsumer, ScenarioDatabase, "Write scenario data")
+Rel(APIGateway, ScenarioService, "Proxy request", "REST")
+Rel(MessageBroker, ScenarioService,  "Reads devices data", "json", "topic: scenarios")
+Rel(ScenarioService, MessageBroker, "Publishes scensarios data", "json", "topic: scenarios")
+Rel(ScenarioService, ScenarioDatabase, "Reads/writes scenarios data")
 
 @enduml
