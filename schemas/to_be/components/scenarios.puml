@@ -19,14 +19,14 @@ Container_Boundary(WarmHouseBoundary, "WarmHouse System") {
 }
 
 Container(ScenariosService, "Scenarios Service") {
-  Component(Consumer, "Scenarios Consumer", "Consumes scenarios data messages")
+  Component(Consumer, "Consumer", "Consumes scenarios data messages")
   Component(ConsumerServiceLayer, "Consumer Service Layer", "Business logic")
 
-  Component(Controller, "Scenarios Controller", "Handles scenarios operations")
+  Component(Controller, "Controller", "Handles scenarios operations")
   Component(ControllerServiceLayer, "Controller Service Layer", "Business logic")
 
-  Component(Worker, "Worker for triggering scenarios", "Business logic")
-  Component(WorkerServiceLayer, "Worker Service Layer", "Business logic")
+  Component(Schedule, "Scheduler", "Triggers scenarios by schedule")
+  Component(ScheduleServiceLayer, "Schedule Service Layer", "Business logic")
 
   Component(RepositoryLayer, "Repository Layer", "Data access")
 }
@@ -34,16 +34,16 @@ Container(ScenariosService, "Scenarios Service") {
 Rel(APIGateway, Controller, "Calls API")
 
 Rel(Controller, ControllerServiceLayer, "Calls business logic")
-Rel_U(ControllerServiceLayer, MessageBroker, "Publishes scenarios data")
+Rel_U(ControllerServiceLayer, MessageBroker, "Publishes scenarios/trigger messages")
 Rel(ControllerServiceLayer, RepositoryLayer, "Reads data")
 
 Rel(Consumer, ConsumerServiceLayer, "Calls business logic")
-Rel_U(Consumer, MessageBroker, "Reads scenarios or triggers data")
+Rel_U(Consumer, MessageBroker, "Reads scenarios/trigger messages")
 Rel(ConsumerServiceLayer, RepositoryLayer, "Reads/Writes data")
 
-Rel(Worker, WorkerServiceLayer, "Calls triggers logic")
-Rel(WorkerServiceLayer, MessageBroker, "Publish trigger")
-Rel(WorkerServiceLayer, RepositoryLayer, "Reads data")
+Rel(Schedule, ScheduleServiceLayer, "Calls schedule logic")
+Rel(ScheduleServiceLayer, MessageBroker, "Publishes trigger messages")
+Rel(ScheduleServiceLayer, RepositoryLayer, "Reads data")
 
 Rel(RepositoryLayer, ScenariosDatabase, "Reads/Writes data")
 

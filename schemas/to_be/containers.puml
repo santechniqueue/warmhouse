@@ -44,27 +44,24 @@ Rel(User, WebApplication, "Manages scenarios")
 Rel(WebApplication, APIGateway, "Sends request", "HTTPS")
 
 'Users'
-Rel_L(APIGateway, UsersService, "Proxy request", "REST")
+Rel(APIGateway, UsersService, "Proxy request", "REST")
 Rel(UsersService, UsersDatabase, "Reads/Writes users data")
 
 'Telemetry'
-Rel_R(APIGateway, TelemetryService, "Proxy request", "REST")
-Rel(MessageBroker, TelemetryService,  "Reads\ntelemetry data", "json", "topic: telemetry")
-Rel_R(TelemetryService, TelemetryDatabase, "Reads/writes\ntelemetry data", "json", "topic: telemetry")
+Rel(APIGateway, TelemetryService, "Proxy request", "REST")
+Rel(TelemetryService, MessageBroker, "Reads/Publishes telemetry messages", "json", "topic: telemetry")
+Rel(TelemetryService, TelemetryDatabase, "Reads/writes telemetry data")
 
-Rel(ExternalDevicesAPI, TelemetryService, "Writes devices\ntelemetry", "open protocol")
-Rel(TelemetryService, MessageBroker, "Publishes devices telemetry", "json", "topic: telemetry")
+Rel(TelemetryService, ExternalDevicesAPI, "Reads external devices telemetry", "open protocol")
 
 'Devices'
-Rel_R(APIGateway, DevicesService, "Proxy request", "REST")
-Rel_U(MessageBroker, DevicesService,  "Reads\ndevicesdata", "json", "topic: devices")
-Rel_D(DevicesService, MessageBroker, "Publishes\ndevices data", "json", "topic: devices")
-Rel(DevicesService, DevicesDatabase, "Reads/writes\ndevices data")
+Rel(APIGateway, DevicesService, "Proxy request", "REST")
+Rel(DevicesService, MessageBroker, "Reads/Publishes devices messages", "json", "topic: devices")
+Rel_R(DevicesService, DevicesDatabase, "Reads/writes devices data")
 
 'Scenario
-Rel_L(APIGateway, ScenarioService, "Proxy request", "REST")
-Rel(MessageBroker, ScenarioService,  "Reads\nscenarios data", "json", "topic: scenarios")
-Rel(ScenarioService, MessageBroker, "Publishes\nscensarios data", "json", "topic: scenarios")
+Rel(APIGateway, ScenarioService, "Proxy request", "REST")
+Rel(ScenarioService, MessageBroker, "Reads/Publishes scenarios messages", "json", "topic: scenarios")
 Rel(ScenarioService, ScenarioDatabase, "Reads/writes scenarios data")
 
 @enduml

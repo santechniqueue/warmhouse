@@ -16,7 +16,7 @@ Container_Boundary(WarmHouseBoundary, "WarmHouse System") {
 }
 
 Container(UsersService, "Users Service") {
-  Component(Controller, "Users Controller", "Handles users requests")
+  Component(Controller, "Controller", "Handles users requests")
   Component(ServiceLayer, "Service Layer", "Business logic")
 
   Component(RepositoryLayer, "Repository Layer", "Data access")

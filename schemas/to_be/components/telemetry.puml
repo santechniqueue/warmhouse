@@ -19,14 +19,14 @@ Container_Boundary(WarmHouseBoundary, "WarmHouse System") {
 }
 
 Container(TelemetryService, "Telemetry Service") {
-  Component(Consumer, "Telemetry Consumer", "Consumes telemetry data messages")
+  Component(Consumer, "Consumer", "Consumes telemetry data messages")
   Component(ConsumerServiceLayer, "Consumer Service Layer", "Business logic")
 
-  Component(Controller, "Telemetry Controller", "Handles telemetry report requests")
+  Component(Controller, "Controller", "Handles telemetry report requests")
   Component(ControllerServiceLayer, "Controller Service Layer", "Business logic")
 
-  Component(StreamWorker, "Telemetry Stream Worker", "Worker for reading telemetry from external devices")
-  Component(StreamServiceLayer, "Telemetry Stream Service Layer", "Business logic")
+  Component(Stream, "Streamer", "Streaming telemetry from external devices")
+  Component(StreamServiceLayer, "Stream Service Layer", "Business logic")
 
   Component(RepositoryLayer, "Repository Layer", "Data access")
 }
@@ -39,12 +39,12 @@ Rel(Controller, ControllerServiceLayer, "Calls business logic")
 Rel(ControllerServiceLayer, RepositoryLayer, "Reads data")
 
 Rel(Consumer, ConsumerServiceLayer, "Calls business logic")
-Rel(Consumer, MessageBroker, "Reads telemetry data")
+Rel(Consumer, MessageBroker, "Reads telemetry messages")
 Rel(ConsumerServiceLayer, RepositoryLayer, "Writes data")
 
-Rel(StreamWorker, StreamServiceLayer, "Calls business logic")
+Rel(Stream, StreamServiceLayer, "Calls business logic")
 Rel_U(StreamServiceLayer, ExternalDevicesAPI, "Reads telemetry from device")
-Rel_U(StreamServiceLayer, MessageBroker, "Publishes telemetry data")
+Rel_U(StreamServiceLayer, MessageBroker, "Publishes telemetry messages")
 
 Rel(RepositoryLayer, TelemetryDatabase, "Reads/Writes data")
 

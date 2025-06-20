@@ -19,21 +19,23 @@ Container_Boundary(WarmHouseBoundary, "WarmHouse System") {
 }
 
 Container(DevicesService, "Devices Service") {
-  Component(Consumer, "Devices Consumer", "Consumes device data messages")
+  Component(Consumer, "Consumer", "Consumes device data messages")
   Component(ConsumerServiceLayer, "Consumer Service Layer", "Business logic")
-  Component(Controller, "Devices Controller", "Handles devices operations")
+
+  Component(Controller, "Controller", "Handles devices operations")
   Component(ControllerServiceLayer, "Controller Service Layer", "Business logic")
+
   Component(RepositoryLayer, "Repository Layer", "Data access")
 }
 
 Rel(APIGateway, Controller, "Calls API")
 
 Rel(Controller, ControllerServiceLayer, "Calls business logic")
-Rel_U(ControllerServiceLayer, MessageBroker, "Publishes devices data")
+Rel_U(ControllerServiceLayer, MessageBroker, "Publishes devices messages")
 Rel(ControllerServiceLayer, RepositoryLayer, "Reads data")
 
 Rel(Consumer, ConsumerServiceLayer, "Calls business logic")
-Rel_U(Consumer, MessageBroker, "Reads devices data")
+Rel_U(Consumer, MessageBroker, "Reads devices messages")
 Rel(ConsumerServiceLayer, RepositoryLayer, "Reads/Writes data")
 
 Rel(RepositoryLayer, DevicesDatabase, "Reads/Writes data")
