@@ -115,6 +115,10 @@
 
 ![Диаграмма компонентов телеметрии](schemas/to_be/components/telemetry.svg)
 
+[Диаграмма компонентов пользователей](schemas/to_be/components/users.puml)
+
+![Диаграмма компонентов пользователей](schemas/to_be/components/users.svg)
+
 
 Добавьте диаграмму для каждого из выделенных микросервисов.
 
