@@ -111,6 +111,11 @@
 
 ![Диаграмма компонентов сценариев](schemas/to_be/components/scenarios.svg)
 
+[Диаграмма компонентов телеметрии](schemas/to_be/components/telemetry.puml)
+
+![Диаграмма компонентов телеметрии](schemas/to_be/components/telemetry.svg)
+
+
 Добавьте диаграмму для каждого из выделенных микросервисов.
 
 **Диаграмма кода (Code)**
