@@ -15,7 +15,7 @@ Container_Boundary(WarmHouseBoundary, "WarmHouse System") {
     Container(ScenariosService, "Scenarios Service", "Go", $sprite="go")
     Container(APIGateway, "API Gateway", "NGINX", "Proxy server", $sprite="nginx")
     ContainerQueue(MessageBroker, "Message Broker", "Apache Kafka Cluster", "Message bus for services communication", $sprite="kafka")
-    ContainerDb(ScenariosDatabase, "Scenarios Database", "PostgreSQL", "Stores devices data", $sprite="postgresql")
+    ContainerDb(ScenariosDatabase, "Scenarios Database", "PostgreSQL", "Stores scenarios data", $sprite="postgresql")
 }
 
 Container(ScenariosService, "Scenarios Service") {
@@ -45,10 +45,6 @@ Rel(Worker, WorkerServiceLayer, "Calls triggers logic")
 Rel(WorkerServiceLayer, MessageBroker, "Publish trigger")
 Rel(WorkerServiceLayer, RepositoryLayer, "Reads data")
 
-
-
 Rel(RepositoryLayer, ScenariosDatabase, "Reads/Writes data")
-
-
 
 @enduml
