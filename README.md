@@ -107,6 +107,10 @@
 
 ![Диаграмма компонентов устройств](schemas/to_be/components/devices.svg)
 
+[Диаграмма компонентов сценариев](schemas/to_be/components/scenarios.puml)
+
+![Диаграмма компонентов сценариев](schemas/to_be/components/scenarios.svg)
+
 Добавьте диаграмму для каждого из выделенных микросервисов.
 
 **Диаграмма кода (Code)**
