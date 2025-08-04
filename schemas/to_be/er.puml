@@ -1,0 +1,88 @@
+@startuml
+title WarmHouse – ER Diagram
+
+package users {
+    entity User {
+        * id : UUID <Primary Key>
+        --
+        + email : varchar
+        + first_name: varchar
+        + last_name: varchar
+        + phone: varchar
+    }
+
+    entity Session {
+        * id : UUID <Primary Key>
+        --
+        + user_id : UUID <Foreign Key>
+        + token: varchar
+    }
+
+    entity House {
+        * id : UUID <Primary Key>
+        --
+        + user_id : UUID <Foreign Key>
+        + location : varchar
+        + name : varchar
+    }
+
+    entity Room {
+        * id : UUID <Primary Key>
+        --
+        + house_id : UUID <Foreign Key>
+        + name: varchar
+        + type: varchar
+        + square: float
+    }
+}
+
+package devices {
+    entity Device {
+        * id : UUID <Primary Key>
+        --
+        + room_id : UUID <Foreign Key>
+        + name: varchar
+        + model: varchar
+        + type: varchar
+    }
+}
+
+package telemetry {
+    entity Telemetry {
+        * id : UUID <Primary Key>
+        --
+        + device_id : UUID <Foreign Key>
+        + value: float
+        + unit: varchar
+        + created_at: datetime
+    }
+}
+
+package scenarios {
+
+    entity Scenario {
+        * id : UUID <Primary Key>
+        --
+        + device_id : UUID <Foreign Key>
+        + name: float
+    }
+
+    entity Trigger {
+        * id : UUID <Primary Key>
+        --
+        + scenario_id : UUID <Foreign Key>
+        + type: enum<varchar>
+        + condition: varchar
+        + parameters: varchar
+    }
+
+}
+
+User        "1" -- "1"      Session     : has
+User        "1" -- "*"      House       : has
+House       "1" -- "*"      Room        : has
+Room        "1" -- "*"      Device      : has
+Device      "1" -- "*"      Telemetry   : has
+Device      "1" -- "*"      Scenario    : has
+Scenario    "1" -- "*"      Trigger     : has
+@enduml
