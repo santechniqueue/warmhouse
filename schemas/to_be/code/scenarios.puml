@@ -1,0 +1,128 @@
+@startuml go-bridge-level4
+
+skinparam packageStyle rectangle
+skinparam linetype ortho
+hide circle
+
+package telemetry {
+
+    class Controller {
+        +Create()
+        +Read()
+        +Update()
+        +Delete()
+    }
+
+    class ControllerService {
+        +CreateScenario()
+        +ReadScenario()
+        +UpdateScenario()
+        +DeleteScenario()
+    }
+
+    class Consumer {
+        +Run()
+        +Subscribe()
+        +ManageHandler()
+    }
+
+    class ConsumerService {
+        +HandleTrigger()
+    }
+
+    class Streamer {
+        +schedule
+        +RunSchedule()
+    }
+
+    class StreamerService {
+        +device
+        +GetTelemetry()
+    }
+
+    class Repository {
+        +GetById()
+        +GetAll()
+        +Create()
+        +Update()
+        +Delete()
+    }
+
+    class MessageBroker {
+    }
+
+
+    Controller          -->    ControllerService   :    uses
+    ControllerService   -->    Repository          :    uses
+    StreamerService     -->    Repository          :    uses
+    Streamer            -->    StreamerService     :    uses
+    StreamerService     ..>    MessageBroker       :    publishes message
+    MessageBroker       ..>    Consumer            :    reads message
+    Consumer            -->    ConsumerService     :    uses
+    ConsumerService     -->    Repository          :    uses
+}
+
+package scenario {
+
+    class Controller {
+        +Create()
+        +Read()
+        +Update()
+        +Delete()
+    }
+
+    class ControllerService {
+        +CreateScenario()
+        +ReadScenario()
+        +UpdateScenario()
+        +DeleteScenario()
+    }
+
+    class Scheduler {
+        +StartScenario()
+    }
+
+    class ScheduleService {
+        +scenario<Scenario>
+        +RunScenario()
+    }
+
+    class Consumer {
+        +Run()
+        +Subscribe()
+        +ManageHandler()
+    }
+
+    class ConsumerService {
+        +HandleTrigger()
+    }
+
+    class MessageBroker {
+    }
+
+    class Repository {
+        +GetById()
+        +GetAll()
+        +Create()
+        +Update()
+        +Delete()
+    }
+
+    Controller          -->    ControllerService   :    uses
+    ControllerService   -->    Repository          :    uses
+    ControllerService   ..>    MessageBroker       :    publishes message
+    MessageBroker       ..>    Consumer            :    reads message
+    Consumer            -->    ConsumerService     :    uses
+    ConsumerService     -->    Repository          :    uses
+    Scheduler           -->    ScheduleService     :    uses
+    ScheduleService     -->    Repository          :    uses
+    ScheduleService     ..>    MessageBroker       :    publishes message
+'    Streamer            -->    StreamerService     :    uses
+'    StreamerService     ..>    MessageBroker       :    publishes message
+'    MessageBroker       ..>    Consumer            :    reads message
+'    Consumer            -->    ConsumerService     :    uses
+'    ConsumerService     -->    Repository          :    uses
+}
+
+
+@enduml
