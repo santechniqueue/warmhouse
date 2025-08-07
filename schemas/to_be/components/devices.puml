@@ -11,7 +11,7 @@ top to bottom direction
 !include SPRITES/javascript.puml
 !include SPRITES/kafka.puml
 
-Container_Boundary(WarmHouseBoundary, "WarmHouse System") {
+Container_Boundary(DevicesBoundary, "Devices System") {
     Container(DevicesService, "Devices Service", "Go", $sprite="go")
     Container(APIGateway, "API Gateway", "NGINX", "Proxy server", $sprite="nginx")
     ContainerQueue(MessageBroker, "Message Broker", "Apache Kafka Cluster", "Message bus for services communication", $sprite="kafka")

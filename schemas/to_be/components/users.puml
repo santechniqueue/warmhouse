@@ -9,10 +9,10 @@ top to bottom direction
 !include SPRITES/postgresql.puml
 !include SPRITES/nginx.puml
 
-Container_Boundary(WarmHouseBoundary, "WarmHouse System") {
+Container_Boundary(UsersBoundary, "Users System") {
     Container(UsersService, "Users Service", "Go", $sprite="go")
     Container(APIGateway, "API Gateway", "NGINX", "Proxy server", $sprite="nginx")
-    ContainerDb(UsersDatabase, "Users Database", "PostgreSQL", "Stores devices data", $sprite="postgresql")
+    ContainerDb(UsersDatabase, "Users Database", "PostgreSQL", "Stores users data", $sprite="postgresql")
 }
 
 Container(UsersService, "Users Service") {
