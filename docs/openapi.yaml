@@ -1,0 +1,487 @@
+openapi: '3.0.3'
+info:
+  title: WarmHouse API
+  version: '1.0'
+servers:
+  - url: https://warmhouse.ru/api/v1
+tags:
+  - name: users-service
+    description: Service for user's authentication and authorization
+  - name: devices-service
+    description: Service for devices management
+  - name: scenarios-service
+    description: Service for managing/triggering/scheduling scenarios
+  - name: telemetry-service
+    description: Service for managing/collecting telemetry
+paths:
+
+  /users:
+    post:
+      tags:
+        - users-service
+      operationId: create-user
+      description: "Creates user"
+      requestBody:
+        required: true
+        description: "User data"
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+      responses:
+        201:
+          description: "User created successfully"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserWithId"
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/AccessDenied'
+        404:
+          $ref: '#/components/responses/NotFound'
+  /users/{id}:
+    get:
+      tags:
+        - users-service
+      operationId: get-user
+      description: "Retrieve user"
+      security:
+        - BearerAuth: [ admin, superuser ]
+      responses:
+        200:
+          description: "User retrieved successfully"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserWithId"
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/AccessDenied'
+        404:
+          $ref: '#/components/responses/NotFound'
+    patch:
+      tags:
+        - users-service
+      operationId: update-user
+      description: "Update user"
+      security:
+        - BearerAuth: [ admin, user, superuser ]
+      requestBody:
+        required: true
+        description: "User data"
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+      responses:
+        200:
+          description: "User updated successfully"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserWithId"
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/AccessDenied'
+        404:
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+        - users-service
+      operationId: delete-user
+      description: "Delete user"
+      security:
+        - BearerAuth: [ admin, user, superuser ]
+      responses:
+        204:
+          description: "User deleted successfully"
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/AccessDenied'
+        404:
+          $ref: '#/components/responses/NotFound'
+  /users/login:
+    post:
+      tags:
+        - users-service
+      operationId: login-user
+      description: "Login user"
+      requestBody:
+        required: true
+        description: "User auth data"
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserCredentials"
+      responses:
+        '200':
+          description: "User authenticated successfully"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserJWT"
+        '401':
+          description: "Invalid credentials were provided"
+
+  /devices:
+    post:
+      tags:
+        - devices-service
+      operationId: create-device
+      description: "Creates device"
+      security:
+        - BearerAuth: [ user ]
+      requestBody:
+        required: true
+        description: "Device data"
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Device"
+      responses:
+        201:
+          description: "Created"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeviceWithId"
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/AccessDenied'
+        404:
+          $ref: '#/components/responses/NotFound'
+  /devices/{id}:
+    get:
+      tags:
+        - devices-service
+      operationId: get-device
+      description: "Retrieve device"
+      security:
+        - BearerAuth: [ user ]
+      responses:
+        200:
+          description: "Retrieved successfully"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeviceWithId"
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/AccessDenied'
+        404:
+          $ref: '#/components/responses/NotFound'
+    patch:
+      tags:
+        - devices-service
+      operationId: create-device
+      description: "Creates device"
+      security:
+        - BearerAuth: [ user ]
+      responses:
+        200:
+          description: "Device updated successfully"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeviceWithId"
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/AccessDenied'
+        404:
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+        - devices-service
+      operationId: delete-device
+      description: "Delete device"
+      security:
+        - BearerAuth: [ user ]
+      responses:
+        204:
+          description: "Device deleted successfully"
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/AccessDenied'
+        404:
+          $ref: '#/components/responses/NotFound'
+
+  /scenarios:
+    post:
+      tags:
+        - scenarios-service
+      operationId: create-scenario
+      description: "Creates scenario"
+      security:
+        - BearerAuth: [ user ]
+      requestBody:
+        required: true
+        description: "Scenario data"
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Scenario"
+      responses:
+        201:
+          description: "Created"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScenarioWithId"
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/AccessDenied'
+        404:
+          $ref: '#/components/responses/NotFound'
+  /scenarios/{id}/trigger:
+    post:
+      tags:
+        - scenarios-service
+      operationId: trigger-scenario
+      description: "Manually start user scenario"
+      security:
+        - BearerAuth: [ user ]
+      responses:
+        200:
+          description: "OK"
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/AccessDenied'
+        404:
+          $ref: '#/components/responses/NotFound'
+
+  /devices/{id}/telemetry:
+    get:
+      tags:
+        - telemetry-service
+      operationId: retrieve-telemetry
+      description: "Retrieves device telemetry"
+      security:
+        - BearerAuth: [ user ]
+      responses:
+        200:
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TelemetryList"
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/AccessDenied'
+        404:
+          $ref: '#/components/responses/NotFound'
+
+components:
+  schemas:
+
+    UserRole:
+      type: string
+      enum:
+        - user
+        - admin
+        - superuser
+      example: "user"
+
+    UserPassword:
+      type: string
+      format: password
+      example: "Pa55word1!"
+
+    UserEmail:
+      type: string
+      example: "john.doe@google.com"
+
+    User:
+      type: object
+      properties:
+        first_name:
+          type: string
+          example: "John"
+        last_name:
+          type: string
+          example: "Doe"
+        email:
+          $ref: "#/components/schemas/UserEmail"
+        password:
+          $ref: "#/components/schemas/UserPassword"
+        role:
+          $ref: "#/components/schemas/UserRole"
+
+    UserWithId:
+      allOf:
+        - $ref: "#/components/schemas/User"
+        - type: object
+          required:
+            - id
+          properties:
+            id:
+              type: string
+              example: "89d7168c-ad2a-4a14-9993-e55b731b7b5a"
+
+    UserCredentials:
+      type: object
+      properties:
+        email:
+          $ref: "#/components/schemas/UserEmail"
+          required: true
+        password:
+          $ref: "#/components/schemas/UserPassword"
+          required: true
+
+    UserJWT:
+      type: string
+      example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTc1NDU5NDM1MX0.ulGR_W2h7xNX7BgUG9YpAzNjRBNn47VoWX1pCnnq7xc!"
+
+
+    Device:
+      type: object
+      properties:
+        room_id:
+          type: string
+          example: "59a8666d-f85d-4117-95e7-0e6dc5ab91d5"
+        name:
+          type: string
+          example: "Some heating device"
+        model:
+          type: string
+          example: "HeatOMeter"
+        device_type:
+          type: string
+          example: "d1v3.2"
+
+    DeviceWithId:
+      allOf:
+        - $ref: "#/components/schemas/Device"
+        - type: object
+          required:
+            - id
+          properties:
+            id:
+              type: string
+              example: "89d7168c-ad2a-4a14-9993-e55b731b7b5a"
+
+    Trigger:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "Scenario trigger"
+        condition:
+          type: string
+          example: "cron"
+        parameters:
+          type: string
+          example: "* 2 * * *"
+
+    TriggerWithId:
+      allOf:
+        - $ref: "#/components/schemas/Trigger"
+        - type: object
+          required:
+            - id
+          properties:
+            id:
+              type: string
+              example: "9dc72e47-ecd0-41be-a4a7-1581561534a4"
+
+    DeviceId:
+      type: string
+      example: "8df08fbe-10b1-4cfb-bb81-c76d2ec7608c"
+
+    ScenarioName:
+      type: string
+      example: "Some user scenario"
+
+    Scenario:
+      type: object
+      properties:
+        device_id:
+          $ref: "#/components/schemas/DeviceId"
+        name:
+          $ref: "#/components/schemas/ScenarioName"
+        trigger:
+          $ref: "#/components/schemas/Trigger"
+
+    ScenarioWithId:
+      properties:
+        device_id:
+          $ref: "#/components/schemas/DeviceId"
+        name:
+          $ref: "#/components/schemas/ScenarioName"
+        trigger:
+          $ref: "#/components/schemas/TriggerWithId"
+        id:
+          type: string
+          example: "b1ea821e-237e-4942-a790-e18d1e53a1f3"
+
+    Telemetry:
+      properties:
+        device_id:
+          $ref: "#/components/schemas/DeviceId"
+        value:
+          type: number
+          format: float
+          example: 26.2
+        unit:
+          type: string
+          example: "℃"
+        created_at:
+          type: string
+          format: date-time
+          example: "2017-07-21T17:32:28Z"
+
+    TelemetryList:
+      type: array
+      items:
+        $ref: "#/components/schemas/Telemetry"
+
+
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  responses:
+    BadRequest:
+      description: "Validation error"
+    Unauthorized:
+      description: "Access token is missing or invalid"
+    AccessDenied:
+      description: "Access denied"
+    NotFound:
+      description: "The requested entity is not found"
