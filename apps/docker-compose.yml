@@ -7,7 +7,20 @@ services:
   ## тут нужно добавить настройки
 
   temperature-api:
-  ## тут нужно добавить приложение
+    build:
+      context: ./temperature-api
+      dockerfile: Dockerfile
+    container_name: temperature-api
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/smarthome
+    ports:
+      - "8081:8080"
+    restart: unless-stopped
+    networks:
+      - smarthome-network
 
   app:
     build:
