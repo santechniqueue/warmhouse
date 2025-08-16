@@ -21,3 +21,12 @@ CREATE TABLE IF NOT EXISTS sensors (
 CREATE INDEX IF NOT EXISTS idx_sensors_type ON sensors(type);
 CREATE INDEX IF NOT EXISTS idx_sensors_location ON sensors(location);
 CREATE INDEX IF NOT EXISTS idx_sensors_status ON sensors(status);
+
+CREATE TABLE IF NOT EXISTS devices (
+                                       id SERIAL PRIMARY KEY,
+                                       name VARCHAR(100) NOT NULL,
+    type VARCHAR(50) NOT NULL,
+    location VARCHAR(100) NOT NULL,
+    unit VARCHAR(20),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    );
