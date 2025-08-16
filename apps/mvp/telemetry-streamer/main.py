@@ -39,8 +39,8 @@ async def main():
                     "value": round(random.uniform(-20.0, 60.0), 2),
                     "type": "temperature",
                 }
-                key = f'Device_{device_id}'
-                send_tasks.append(producer.send_and_wait(KAFKA_TOPIC, payload, key=key))
+                key = f'Device_{str(device_id)}'
+                send_tasks.append(producer.send_and_wait(KAFKA_TOPIC, payload, key=key.encode()))
                 print(f"message sent", payload)
 
             if send_tasks:
