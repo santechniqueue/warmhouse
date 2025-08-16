@@ -46,6 +46,8 @@ services:
     environment:
       - DATABASE_URL=postgres://postgres:postgres@postgres:5432/smarthome
       - TEMPERATURE_API_URL=http://temperature-api:8081
+      - KAFKA_BROKERS=kafka:9092
+      - KAFKA_TOPIC=devices
     ports:
       - "8080:8080"
     restart: unless-stopped
@@ -173,7 +175,7 @@ services:
     image: provectuslabs/kafka-ui
     container_name: kafka-ui
     ports:
-      - "8083:8080"
+      - "8084:8080"
     restart: always
     environment:
       - KAFKA_CLUSTERS_0_NAME=local

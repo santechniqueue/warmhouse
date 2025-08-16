@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 
@@ -14,6 +15,8 @@ import (
 	"smarthome/services"
 
 	"github.com/gin-gonic/gin"
+
+	"github.com/segmentio/kafka-go"
 )
 
 func main() {
@@ -45,8 +48,20 @@ func main() {
 	// API routes
 	apiRoutes := router.Group("/api/v1")
 
+	// Отправка сообщения с устройством в Kafka для сохранения совместимости
+	brokers := strings.Split(getEnv("KAFKA_BROKERS", "kafka:9092"), ",")
+	producer := &kafka.Writer{
+		Addr:                   kafka.TCP(brokers...),
+		Topic:                  getEnv("KAFKA_TOPIC", "devices"),
+		Balancer:               &kafka.LeastBytes{},
+		RequiredAcks:           kafka.RequireAll,
+		Async:                  false,
+		AllowAutoTopicCreation: true,
+	}
+	defer producer.Close()
+
 	// Register sensor routes
-	sensorHandler := handlers.NewSensorHandler(database, temperatureService)
+	sensorHandler := handlers.NewSensorHandler(database, temperatureService, producer)
 	sensorHandler.RegisterRoutes(apiRoutes)
 
 	// Start server
