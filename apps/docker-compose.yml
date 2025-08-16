@@ -52,7 +52,7 @@ services:
     networks:
       - smarthome-network
 
-  devices-management:
+  devices-app:
     build:
       context: ./mvp/devices-management
       dockerfile: Dockerfile
@@ -61,11 +61,28 @@ services:
       postgres:
         condition: service_healthy
     environment:
-      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/smarthome?sslmode=disable
+      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/smarthome
       - HTTP_PORT=:8082
       - KAFKA_BROKERS=kafka:9092
     ports:
       - "8082:8082"
+    restart: unless-stopped
+    networks:
+      - smarthome-network
+
+  devices-consumer:
+    build:
+      context: ./mvp/devices-consumer
+      dockerfile: Dockerfile
+    container_name: devices-consumer
+    depends_on:
+      postgres:
+        condition: service_healthy
+      devices-app:
+        condition: service_started
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/smarthome
+      - KAFKA_BROKERS=kafka:9092
     restart: unless-stopped
     networks:
       - smarthome-network
