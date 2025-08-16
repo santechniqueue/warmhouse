@@ -93,7 +93,7 @@ services:
       - DATABASE_URL=postgres://postgres:postgres@postgres:5432/smarthome
       - KAFKA_BROKERS=kafka:9092
       - KAFKA_TOPIC=telemetry
-      - POLL_INTERVAL_SEC=10
+      - POLL_INTERVAL_SEC=60
     depends_on:
       postgres:
         condition: service_healthy
@@ -119,6 +119,19 @@ services:
       restart: unless-stopped
       networks:
         - smarthome-network
+
+  telemetry-api:
+    build: ./mvp/telemetry-api
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/smarthome
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    ports:
+      - "8083:8083"
+    networks:
+      - smarthome-network
 
   kafka:
     image: bitnami/kafka:3.7
