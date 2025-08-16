@@ -87,6 +87,22 @@ services:
     networks:
       - smarthome-network
 
+  telemetry-streamer:
+    build: ./mvp/telemetry-streamer
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/smarthome
+      - KAFKA_BROKERS=kafka:9092
+      - KAFKA_TOPIC=telemetry
+      - POLL_INTERVAL_SEC=10
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - smarthome-network
+
   kafka:
     image: bitnami/kafka:3.7
     container_name: kafka

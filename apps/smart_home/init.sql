@@ -23,10 +23,19 @@ CREATE INDEX IF NOT EXISTS idx_sensors_location ON sensors(location);
 CREATE INDEX IF NOT EXISTS idx_sensors_status ON sensors(status);
 
 CREATE TABLE IF NOT EXISTS devices (
-                                       id SERIAL PRIMARY KEY,
-                                       name VARCHAR(100) NOT NULL,
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
     type VARCHAR(50) NOT NULL,
     location VARCHAR(100) NOT NULL,
     unit VARCHAR(20),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    );
+
+
+CREATE TABLE IF NOT EXISTS telemetry (
+    id SERIAL PRIMARY KEY,
+    device_id VARCHAR(100) NOT NULL,
+    value DOUBLE PRECISION NOT NULL,
+    type VARCHAR(50) NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
     );
