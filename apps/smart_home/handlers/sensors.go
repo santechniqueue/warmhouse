@@ -12,20 +12,42 @@ import (
 	"smarthome/services"
 
 	"github.com/gin-gonic/gin"
+
+	"encoding/json"
+	"github.com/segmentio/kafka-go"
+	"time"
 )
 
 // SensorHandler handles sensor-related requests
 type SensorHandler struct {
 	DB                 *db.DB
 	TemperatureService *services.TemperatureService
+	Producer           *kafka.Writer
 }
 
 // NewSensorHandler creates a new SensorHandler
-func NewSensorHandler(db *db.DB, temperatureService *services.TemperatureService) *SensorHandler {
+func NewSensorHandler(db *db.DB, temperatureService *services.TemperatureService, producer *kafka.Writer) *SensorHandler {
 	return &SensorHandler{
 		DB:                 db,
 		TemperatureService: temperatureService,
+		Producer:           producer}
+}
+
+type deviceEvent struct {
+	Op     string      `json:"op"`
+	Device interface{} `json:"device"`
+}
+
+func (h *SensorHandler) publish(ctx context.Context, ev deviceEvent) error {
+	if h.Producer == nil {
+		return nil
 	}
+	b, _ := json.Marshal(ev)
+	return h.Producer.WriteMessages(ctx, kafka.Message{
+		Key:   []byte(ev.Op),
+		Value: b,
+		Time:  time.Now(),
+	})
 }
 
 // RegisterRoutes registers the sensor routes
@@ -142,6 +164,18 @@ func (h *SensorHandler) CreateSensor(c *gin.Context) {
 		return
 	}
 
+	if err := h.publish(c.Request.Context(), deviceEvent{
+		Op: "create",
+		Device: map[string]any{
+			"name":     sensor.Name,
+			"type":     sensor.Type,
+			"location": sensor.Location,
+			"unit":     sensor.Unit,
+		},
+	}); err != nil {
+		log.Printf("kafka publish failed (create): %v", err)
+	}
+
 	c.JSON(http.StatusCreated, sensor)
 }
 
@@ -165,6 +199,18 @@ func (h *SensorHandler) UpdateSensor(c *gin.Context) {
 		return
 	}
 
+	if err := h.publish(c.Request.Context(), deviceEvent{
+		Op: "update",
+		Device: map[string]any{
+			"id":       sensor.ID,
+			"name":     sensor.Name,
+			"type":     sensor.Type,
+			"location": sensor.Location,
+			"unit":     sensor.Unit,
+		},
+	}); err != nil {
+		log.Printf("kafka publish failed (update): %v", err)
+	}
 	c.JSON(http.StatusOK, sensor)
 }
 
@@ -180,6 +226,13 @@ func (h *SensorHandler) DeleteSensor(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
+	}
+
+	if err := h.publish(c.Request.Context(), deviceEvent{
+		Op:     "delete",
+		Device: map[string]any{"id": id}, // <— вместо просто числа
+	}); err != nil {
+		log.Printf("kafka publish failed (delete): %v", err)
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Sensor deleted successfully"})

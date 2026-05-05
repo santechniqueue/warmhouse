@@ -1,0 +1,51 @@
+@startuml
+title WarmHouse Telemetry Sub‑system (Component)
+
+top to bottom direction
+
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+!define SPRITES https://raw.githubusercontent.com/plantuml-stdlib/gilbarbara-plantuml-sprites/master/sprites
+!include SPRITES/go.puml
+!include SPRITES/postgresql.puml
+!include SPRITES/nginx.puml
+!include SPRITES/javascript.puml
+!include SPRITES/kafka.puml
+
+Container_Boundary(TelemetryBoundary, "Telemetry System") {
+    Container(TelemetryService, "Telemetry Service", "Go", $sprite="go")
+    Container(APIGateway, "API Gateway", "NGINX", "Proxy server", $sprite="nginx")
+    ContainerQueue(MessageBroker, "Message Broker", "Apache Kafka Cluster", "Message bus for services communication", $sprite="kafka")
+    ContainerDb(TelemetryDatabase, "Telemetry Database", "PostgreSQL", "Stores telemetry data", $sprite="postgresql")
+}
+
+Container(TelemetryService, "Telemetry Service") {
+  Component(Consumer, "Consumer", "Consumes telemetry data messages")
+  Component(ConsumerServiceLayer, "Consumer Service Layer", "Business logic")
+
+  Component(Controller, "Controller", "Handles telemetry report requests")
+  Component(ControllerServiceLayer, "Controller Service Layer", "Business logic")
+
+  Component(Stream, "Streamer", "Streaming telemetry from external devices")
+  Component(StreamServiceLayer, "Stream Service Layer", "Business logic")
+
+  Component(RepositoryLayer, "Repository Layer", "Data access")
+}
+
+System_Ext(ExternalDevicesAPI, "External Devices API", "API for devices connected by the client")
+
+Rel(APIGateway, Controller, "Calls API")
+
+Rel(Controller, ControllerServiceLayer, "Calls business logic")
+Rel(ControllerServiceLayer, RepositoryLayer, "Reads data")
+
+Rel(Consumer, ConsumerServiceLayer, "Calls business logic")
+Rel(Consumer, MessageBroker, "Reads telemetry messages")
+Rel(ConsumerServiceLayer, RepositoryLayer, "Writes data")
+
+Rel(Stream, StreamServiceLayer, "Calls business logic")
+Rel_U(StreamServiceLayer, ExternalDevicesAPI, "Reads telemetry from device")
+Rel_U(StreamServiceLayer, MessageBroker, "Publishes telemetry messages")
+
+Rel(RepositoryLayer, TelemetryDatabase, "Reads/Writes data")
+
+@enduml

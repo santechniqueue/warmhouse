@@ -1,0 +1,50 @@
+@startuml
+title WarmHouse Scenarios Sub‑system (Component)
+
+top to bottom direction
+
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+!define SPRITES https://raw.githubusercontent.com/plantuml-stdlib/gilbarbara-plantuml-sprites/master/sprites
+!include SPRITES/go.puml
+!include SPRITES/postgresql.puml
+!include SPRITES/nginx.puml
+!include SPRITES/javascript.puml
+!include SPRITES/kafka.puml
+
+Container_Boundary(ScenariosBoundary, "Scenarios System") {
+    Container(ScenariosService, "Scenarios Service", "Go", $sprite="go")
+    Container(APIGateway, "API Gateway", "NGINX", "Proxy server", $sprite="nginx")
+    ContainerQueue(MessageBroker, "Message Broker", "Apache Kafka Cluster", "Message bus for services communication", $sprite="kafka")
+    ContainerDb(ScenariosDatabase, "Scenarios Database", "PostgreSQL", "Stores scenarios data", $sprite="postgresql")
+}
+
+Container(ScenariosService, "Scenarios Service") {
+  Component(Consumer, "Consumer", "Consumes scenarios data messages")
+  Component(ConsumerServiceLayer, "Consumer Service Layer", "Business logic")
+
+  Component(Controller, "Controller", "Handles scenarios operations")
+  Component(ControllerServiceLayer, "Controller Service Layer", "Business logic")
+
+  Component(Schedule, "Scheduler", "Triggers scenarios by schedule")
+  Component(ScheduleServiceLayer, "Schedule Service Layer", "Business logic")
+
+  Component(RepositoryLayer, "Repository Layer", "Data access")
+}
+
+Rel(APIGateway, Controller, "Calls API")
+
+Rel(Controller, ControllerServiceLayer, "Calls business logic")
+Rel_U(ControllerServiceLayer, MessageBroker, "Publishes scenarios/trigger messages")
+Rel(ControllerServiceLayer, RepositoryLayer, "Reads data")
+
+Rel(Consumer, ConsumerServiceLayer, "Calls business logic")
+Rel_U(Consumer, MessageBroker, "Reads scenarios/trigger messages")
+Rel(ConsumerServiceLayer, RepositoryLayer, "Reads/Writes data")
+
+Rel(Schedule, ScheduleServiceLayer, "Calls schedule logic")
+Rel(ScheduleServiceLayer, MessageBroker, "Publishes trigger messages")
+Rel(ScheduleServiceLayer, RepositoryLayer, "Reads data")
+
+Rel(RepositoryLayer, ScenariosDatabase, "Reads/Writes data")
+
+@enduml

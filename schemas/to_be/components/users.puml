@@ -1,0 +1,32 @@
+@startuml
+title WarmHouse Users Sub‑system (Component)
+
+top to bottom direction
+
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+!define SPRITES https://raw.githubusercontent.com/plantuml-stdlib/gilbarbara-plantuml-sprites/master/sprites
+!include SPRITES/go.puml
+!include SPRITES/postgresql.puml
+!include SPRITES/nginx.puml
+
+Container_Boundary(UsersBoundary, "Users System") {
+    Container(UsersService, "Users Service", "Go", $sprite="go")
+    Container(APIGateway, "API Gateway", "NGINX", "Proxy server", $sprite="nginx")
+    ContainerDb(UsersDatabase, "Users Database", "PostgreSQL", "Stores users data", $sprite="postgresql")
+}
+
+Container(UsersService, "Users Service") {
+  Component(Controller, "Controller", "Handles users requests")
+  Component(ServiceLayer, "Service Layer", "Business logic")
+
+  Component(RepositoryLayer, "Repository Layer", "Data access")
+}
+
+Rel(APIGateway, Controller, "Calls API")
+
+Rel(Controller, ServiceLayer, "Calls business logic")
+Rel(ServiceLayer, RepositoryLayer, "Reads/Writes data")
+
+Rel(RepositoryLayer, UsersDatabase, "Reads/Writes data")
+
+@enduml
